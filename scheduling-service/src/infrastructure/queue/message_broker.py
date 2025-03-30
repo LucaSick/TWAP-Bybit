@@ -3,7 +3,7 @@ import os
 import time
 
 def send_message(channel, body):
-    channel.basic_publish(exchange='', routing_key=os.getenv('RABBIT_MQ_QUEUE'), body=body)
+    channel.basic_publish(exchange='', routing_key=os.getenv('RABBITMQ_QUEUE'), body=body)
 
 def close_broker(connection):
     connection.close()
@@ -21,7 +21,7 @@ def setup_broker():
                 )
             ))
             channel = connection.channel()
-            channel.queue_declare(queue=os.getenv('RABBIT_MQ_QUEUE'))
+            channel.queue_declare(queue=os.getenv('RABBITMQ_QUEUE'))
             return connection, channel
         except Exception as e:
             print(f"RabbitMQ is not ready (attempt {i+1}/{max_retries})")

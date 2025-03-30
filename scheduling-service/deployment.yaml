@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+      - name: app
+        image: scheduling-service-app:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 8000
+        env:
+          - name: POSTGRES_USER
+            value: "postgres_user"
+          - name: POSTGRES_PASSWORD
+            value: "12345"
+          - name: POSTGRES_HOST
+            value: "postgres"
+          - name: POSTGRES_DATABASE
+            value: "scheduler_db"
+          - name: POSTGRES_PORT
+            value: "5432"
+          - name: RABBITMQ_HOST
+            value: "rabbitmq"
+          - name: RABBITMQ_USER
+            value: "guest"
+          - name: RABBITMQ_PASSWORD
+            value: "guest"
+          - name: RABBITMQ_PORT
+            value: "5672"
+          - name: RABBITMQ_QUEUE
+            value: "twap_orders"
