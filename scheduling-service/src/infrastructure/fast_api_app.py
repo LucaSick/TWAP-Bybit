@@ -55,8 +55,8 @@ class SchedulingService(Infra):
         def twap_strategy(body: TwapOrderBody):
             order = self.manage_twap_order.create_twap_order(body.symbol, body.side, body.total_size, body.total_time, body.frequency, body.price_limit)
             delay, end_datetime = self.manage_twap_order.create_times_for_order(order)
-            add_job(self.scheduler, send_order, delay, end_datetime, [order.get_symbol, order.get_side, order.get_size_per_order, order.get_price_limit])
-            return {"status": "done", "delay": delay, "end_date": end_datetime}
+            add_job(self.scheduler, send_order, delay, end_datetime, [order.get_symbol(), order.get_side(), order.get_size_per_order(), order.get_price_limit()])
+            return {"status": "done", "delay": delay, "end_date": end_datetime, "size": order.get_size_per_order()}
         
         @self.app.on_event("shutdown")
         def shutdown_event():

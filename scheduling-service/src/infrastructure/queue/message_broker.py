@@ -3,6 +3,7 @@ import os
 import time
 
 def send_message(channel, body):
+    print(f"Making an order: {body}")
     channel.basic_publish(exchange='', routing_key=os.getenv('RABBITMQ_QUEUE'), body=body)
 
 def close_broker(connection):

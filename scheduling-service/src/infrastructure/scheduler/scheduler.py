@@ -21,4 +21,5 @@ def shutdown_scheduler(scheduler: BackgroundScheduler):
     return
 
 def add_job(scheduler: BackgroundScheduler, send_order, delay, end_datetime, params_list):
+    print(f"Creating jobs with following params: {params_list}")
     scheduler.add_job(send_order, 'interval', params_list, seconds=delay, end_date=end_datetime)
