@@ -1,4 +1,4 @@
-from twap_order.twap_order_repository import TwapOrderRepository
+from src.domain.twap_order.twap_order_repository import TwapOrderRepository
 
 class Domain:
     def __init__(self, twap_order_repository: TwapOrderRepository):
