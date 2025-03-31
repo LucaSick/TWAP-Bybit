@@ -57,10 +57,10 @@ class SchedulingService(Infra):
             order = self.manage_twap_order.create_twap_order(body.symbol, body.side, body.total_size, body.total_time, body.frequency, body.price_limit)
             delay, end_datetime = self.manage_twap_order.create_times_for_order(order)
             params = {
-                "symbol": order.get_symbol(),
-                "side": order.get_side(), 
-                "size": order.get_size_per_order(), 
-                "price_limit": order.get_price_limit()
+                "symbol": self.twap_order_repository.get_symbol(order),
+                "side": self.twap_order_repository.get_side(order), 
+                "size": self.twap_order_repository.get_size_per_order(order), 
+                "price_limit": self.twap_order_repository.get_price_limit(order)
             }
             job_info = add_job(background_scheduler, send_order, delay, end_datetime, params)
             add_job_to_db(db_connection, job_info)
@@ -68,7 +68,7 @@ class SchedulingService(Infra):
                 "status": "done",
                 "delay": delay,
                 "end_date": end_datetime,
-                "size": order.get_size_per_order()
+                "size": self.twap_order_repository.get_size_per_order(order)
             }
         
         @self.app.on_event("shutdown")

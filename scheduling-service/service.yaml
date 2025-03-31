@@ -4,6 +4,8 @@ metadata:
   name: app
 spec:
   ports:
-    - port: 8000
+    - port: 8100
+      targetPort: 8000
+  type: LoadBalancer
   selector:
     app: app

@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app
+  name: ordering-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: app
+      app: ordering-app
   template:
     metadata:
       labels:
-        app: app
+        app: ordering-app
     spec:
       containers:
-      - name: app
-        image: scheduling-service-app:latest
+      - name: ordering-app
+        image: ordering-service-app:latest
         imagePullPolicy: IfNotPresent
         ports:
-          - containerPort: 8000
+          - containerPort: 8111
         env:
           - name: POSTGRES_USER
             value: "postgres_user"
@@ -39,3 +39,7 @@ spec:
             value: "5672"
           - name: RABBITMQ_QUEUE
             value: "twap_orders"
+          - name: BYBIT_API_KEY
+            value: I6VsJKmPlLBRWFXGZu
+          - name: BYBIT_API_SECRET
+            value: zhnmbHfVBds85leFlh7hctAE1CLbvrM3pYgu

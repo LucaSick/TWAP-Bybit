@@ -8,11 +8,20 @@ class TwapOrderRepository:
     def get_total_orders(self, order: TwapOrder):
         return order.total_time / order.frequency
     
-    def get_price_per_order(self, order: TwapOrder):
-        return order.total_size / self.get_price_per_order(order)
+    def get_size_per_order(self, order: TwapOrder):
+        return order.total_size / self.get_total_orders(order)
     
     def get_delay(self, order: TwapOrder):
         return order.frequency
     
     def get_duration(self, order: TwapOrder):
         return order.total_time
+    
+    def get_symbol(self, order: TwapOrder):
+        return order.symbol
+    
+    def get_side(self, order: TwapOrder):
+        return order.side
+    
+    def get_price_limit(self, order: TwapOrder):
+        return order.price_limit
