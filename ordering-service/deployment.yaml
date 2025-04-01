@@ -40,6 +40,14 @@ spec:
           - name: RABBITMQ_QUEUE
             value: "twap_orders"
           - name: BYBIT_API_KEY
-            value: I6VsJKmPlLBRWFXGZu
+            value: wLGyejSeuDWRvCW6Bi
           - name: BYBIT_API_SECRET
-            value: zhnmbHfVBds85leFlh7hctAE1CLbvrM3pYgu
+            value: FZtJhu0II4cROlmQxRVxJs3elOvSBgd3vgFo
+          - name: MONGODB_USER
+            value: mongodb_user
+          - name: MONGODB_PASSWORD
+            value: mongodb_password
+          - name: MONGODB_HOST
+            value: mongodb
+          - name: MONGODB_PORT
+            value: "27017"

@@ -6,6 +6,7 @@ from src.infrastructure.infrastructure import Infra
 from src.infrastructure.db.database import close_db_connection, cancel_job, db_connection
 from src.infrastructure.queue.message_broker import close_broker, start_broker, queue_connection, queue_channel
 from src.infrastructure.exchanges.bybit.bybit_exchange import bybit_exchange
+from src.infrastructure.logs.log_storage import log_storage
 
 class ConsumerApp(Infra):
     def __init__(self):
@@ -45,9 +46,22 @@ class ConsumerApp(Infra):
                     data["size"],
                     market_price
                 )
+                log_storage.insert_value({
+                    "status": "success",
+                    "symbol": data["symbol"],
+                    "side": data["side"],
+                    "size": data["size"],
+                    "price": market_price,
+                })
             except Exception as e:
                 print("Error while placing order:", e)
                 cancel_job(db_connection, data["job_id"])
+                log_storage.insert_value({
+                    "status": "canceled",
+                    "symbol": data["symbol"],
+                    "side": data["side"],
+                })
+
 
         return lambda ch, method, properties, body: callback(
             ch,
