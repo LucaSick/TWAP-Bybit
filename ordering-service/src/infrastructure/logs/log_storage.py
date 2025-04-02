@@ -17,7 +17,7 @@ class LogStorage:
                 return
             except Exception as e:
                 print(f"MongoDB not ready (attempt {i+1}/{max_retries})")
-                time.sleep(5)
+                time.sleep(2)
         else:
             raise Exception("Could not connect to the database after multiple attempts")
     
@@ -26,4 +26,3 @@ class LogStorage:
         print("Log added:", body)
 
 log_storage = LogStorage()
-

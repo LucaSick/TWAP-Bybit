@@ -8,14 +8,14 @@ from src.domain.domain import Domain
 from src.api.api import API
 from src.infrastructure.infrastructure import Infra
 from src.constants.twap import sideType
-from src.infrastructure.db.database import close_db_connection, db_connection, add_job_to_db, is_canceled
-from src.infrastructure.scheduler.scheduler import setup_sched, shutdown_scheduler, add_job, background_scheduler
-from src.infrastructure.queue.message_broker import send_message, close_broker, queue_connection, queue_channel
+from src.infrastructure.db.database import database
+from src.infrastructure.scheduler.scheduler import scheduler
+from src.infrastructure.queue.message_broker import message_broker
 
 def send_order(symbol, side, size, price_limit, job_id):
-    canceled = is_canceled(db_connection, job_id)
+    canceled = database.is_canceled(job_id)
     if canceled:
-        background_scheduler.remove_job(job_id)
+        scheduler.remove_job(job_id)
         print(f"Job {job_id} cancelled.")
         return
 
@@ -26,7 +26,7 @@ def send_order(symbol, side, size, price_limit, job_id):
         "price_limit": price_limit,
         "job_id": job_id,
     }
-    send_message(queue_channel, body)
+    message_broker.send_message(body)
 
 class TwapOrderBody(BaseModel):
     symbol: str
@@ -41,11 +41,8 @@ class SchedulingService(Infra):
         super().__init__()
         load_dotenv()
         self.app = FastAPI()
-        self.setup_scheduler()
+        scheduler.setup_scheduler()
         self.setup_routes()
-
-    def setup_scheduler(self):
-        setup_sched(background_scheduler)
     
     def setup_routes(self):
         @self.app.get("/status")
@@ -62,8 +59,8 @@ class SchedulingService(Infra):
                 "size": self.twap_order_repository.get_size_per_order(order), 
                 "price_limit": self.twap_order_repository.get_price_limit(order)
             }
-            job_info = add_job(background_scheduler, send_order, delay, end_datetime, params)
-            add_job_to_db(db_connection, job_info)
+            job_info = scheduler.add_job(send_order, delay, end_datetime, params)
+            database.add_job_to_db(job_info)
             return {
                 "status": "done",
                 "delay": delay,
@@ -73,6 +70,6 @@ class SchedulingService(Infra):
         
         @self.app.on_event("shutdown")
         def shutdown_event():
-            shutdown_scheduler(background_scheduler)
-            close_broker(queue_connection)
-            close_db_connection(db_connection)
+            scheduler.shutdown_scheduler()
+            message_broker.close_broker()
+            database.close_db_connection()
