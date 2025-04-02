@@ -62,7 +62,7 @@ class SchedulingService(Infra):
             job_info = scheduler.add_job(send_order, delay, end_datetime, params)
             database.add_job_to_db(job_info)
             return {
-                "status": "done",
+                "status": "scheduled",
                 "delay": delay,
                 "end_date": end_datetime,
                 "size": self.twap_order_repository.get_size_per_order(order)
