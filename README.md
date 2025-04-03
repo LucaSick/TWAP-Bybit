@@ -38,6 +38,7 @@ Consumes messages from the queue, fetches the current price from Bybit's testnet
 ## Tech Stack
 
 - **Python**
+- **FastAPI as a Web Framework**
 - **Docker + Kubernetes (local)**
 - **RabbitMQ** for inter-service messaging
 - **MongoDB** for log storage
@@ -61,6 +62,8 @@ This command:
 -   Deploys services into Kubernetes
     
 -   Initializes required infrastructure (MongoDB, RabbitMQ, PostgreSQL)
+
+After that, requests can be sent to `http://localhost:8000/twap-strategy`
 
 ### Stopping the system
 In root of the project execute this: `make stop`
