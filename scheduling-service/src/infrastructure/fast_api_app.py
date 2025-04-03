@@ -12,6 +12,15 @@ from src.infrastructure.db.database import database
 from src.infrastructure.scheduler.scheduler import scheduler
 from src.infrastructure.queue.message_broker import message_broker
 
+"""
+Called on each interval to send a order message to the broker unless the job is canceled.
+Args ->
+    symbol (str): Trading pair symbol.
+    side (sideType): Order side ("bid" or "ask").
+    size (float): Size per order.
+    price_limit (float | None): Optional price limit.
+    job_id (str): The job's unique identifier.
+"""
 def send_order(symbol, side, size, price_limit, job_id):
     canceled = database.is_canceled(job_id)
     if canceled:
@@ -28,6 +37,9 @@ def send_order(symbol, side, size, price_limit, job_id):
     }
     message_broker.send_message(body)
 
+"""
+Request schema for scheduling a TWAP strategy.
+"""
 class TwapOrderBody(BaseModel):
     symbol: str
     side: sideType
@@ -36,6 +48,9 @@ class TwapOrderBody(BaseModel):
     frequency: int
     price_limit: float | None = None
 
+"""
+FastAPI service for scheduling and managing TWAP strategies.
+"""
 class SchedulingService(Infra):
     def __init__(self):
         super().__init__()
@@ -43,12 +58,21 @@ class SchedulingService(Infra):
         self.app = FastAPI()
         scheduler.setup_scheduler()
         self.setup_routes()
-    
+
+    """
+    Registers API routes for the TWAP scheduling service.
+    """
     def setup_routes(self):
+        """
+        Health check endpoint.
+        """
         @self.app.get("/status")
         def get_status():
             return {"status": "ok"}
 
+        """
+        Endpoint to schedule a TWAP strategy.
+        """
         @self.app.post("/twap-strategy")
         def twap_strategy(body: TwapOrderBody):
             order = self.manage_twap_order.create_twap_order(body.symbol, body.side, body.total_size, body.total_time, body.frequency, body.price_limit)
@@ -68,6 +92,9 @@ class SchedulingService(Infra):
                 "size": self.twap_order_repository.get_size_per_order(order)
             }
         
+        """
+        Cleanup resources on application shutdown.
+        """
         @self.app.on_event("shutdown")
         def shutdown_event():
             scheduler.shutdown_scheduler()

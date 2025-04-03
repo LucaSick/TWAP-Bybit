@@ -2,10 +2,19 @@ import psycopg2
 import os
 import time
 
+"""
+Handles connection and management of a PostgreSQL database.
+"""
 class Database:
+    """
+    Initializes the Database instance and attempts to establish a connection.
+    """
     def __init__(self):
         self.setup_database()
 
+    """
+    Establishes a connection to the PostgreSQL database with retry logic.
+    """
     def setup_database(self):
         max_retries = 10
         for i in range(max_retries):
@@ -23,6 +32,10 @@ class Database:
         else:
             raise Exception("Could not connect to the database after multiple attempts")
 
+    """
+    Cancels a job in the `orders` table by updating its status to 'canceled'.
+    Args -> job_id (str): The job ID to cancel.
+    """
     def cancel_job(self, job_id):
         print("Cancelling job for", job_id)
         cur = self.connection.cursor()
@@ -33,4 +46,5 @@ class Database:
         """, (job_id,))
         self.connection.commit()
 
+# Initialize DB when module is imported
 database = Database()

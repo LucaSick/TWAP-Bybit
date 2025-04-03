@@ -20,34 +20,61 @@ spec:
           - containerPort: 8111
         env:
           - name: POSTGRES_USER
-            value: "postgres_user"
+            valueFrom:
+              secretKeyRef:
+                name: ordering-app-secret
+                key: POSTGRES_USER
           - name: POSTGRES_PASSWORD
-            value: "12345"
+            valueFrom:
+              secretKeyRef:
+                name: ordering-app-secret
+                key: POSTGRES_PASSWORD
+          - name: POSTGRES_DATABASE
+            valueFrom:
+              secretKeyRef:
+                name: ordering-app-secret
+                key: POSTGRES_DATABASE
           - name: POSTGRES_HOST
             value: "postgres"
-          - name: POSTGRES_DATABASE
-            value: "scheduler_db"
           - name: POSTGRES_PORT
             value: "5432"
+          - name: RABBITMQ_USER
+            valueFrom:
+              secretKeyRef:
+                name: ordering-app-secret
+                key: RABBITMQ_USER
+          - name: RABBITMQ_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: ordering-app-secret
+                key: RABBITMQ_PASSWORD
           - name: RABBITMQ_HOST
             value: "rabbitmq"
-          - name: RABBITMQ_USER
-            value: "rabbitmq_user"
-          - name: RABBITMQ_PASSWORD
-            value: "rabbitmq_password"
           - name: RABBITMQ_PORT
             value: "5672"
           - name: RABBITMQ_QUEUE
             value: "twap_orders"
           - name: BYBIT_API_KEY
-            value: wLGyejSeuDWRvCW6Bi
+            valueFrom:
+              secretKeyRef:
+                name: ordering-app-secret
+                key: BYBIT_API_KEY
           - name: BYBIT_API_SECRET
-            value: FZtJhu0II4cROlmQxRVxJs3elOvSBgd3vgFo
+            valueFrom:
+              secretKeyRef:
+                name: ordering-app-secret
+                key: BYBIT_API_SECRET
           - name: MONGODB_USER
-            value: mongodb_user
+            valueFrom:
+              secretKeyRef:
+                name: ordering-app-secret
+                key: MONGODB_USER
           - name: MONGODB_PASSWORD
-            value: mongodb_password
+            valueFrom:
+              secretKeyRef:
+                name: ordering-app-secret
+                key: MONGODB_PASSWORD
           - name: MONGODB_HOST
-            value: mongodb
+            value: "mongodb"
           - name: MONGODB_PORT
             value: "27017"

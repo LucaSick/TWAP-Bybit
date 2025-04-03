@@ -8,16 +8,37 @@ from src.infrastructure.queue.message_broker import message_broker
 from src.infrastructure.exchanges.bybit.bybit_exchange import bybit_exchange
 from src.infrastructure.logs.log_storage import log_storage
 
+"""
+The consumer application responsible for processing messages from RabbitMQ,
+executing orders via an exchange, and logging the outcome.
+"""
 class ConsumerApp(Infra):
+    """
+    Loads environment variables and initializes the message broker.
+    """
     def __init__(self):
         super().__init__()
         load_dotenv()
         self.setup_broker()
 
+    """
+    Starts the RabbitMQ message consumer with a generated callback function.
+    """
     def setup_broker(self):
         callback_function = self.generate_callback()
         message_broker.start_broker(callback_function)
 
+    """
+    Generates the callback function that will be triggered for every received message.
+    This callback:
+        - Parses and validates incoming order messages
+        - Checks for price limits
+        - Creates order data and calculates market price
+        - Sends the order to the exchange
+        - Logs the result and handles failures
+    Returns ->
+        Callable: A function with the required pika callback signature.
+    """
     def generate_callback(self):
         def callback(ch, method, properties, body, order_create_func, market_price_func):
             data = json.loads(body.decode('utf-8'))
@@ -27,6 +48,7 @@ class ConsumerApp(Infra):
 
                 last_price, bid_price, ask_price = bybit_exchange.get_symbol_data(data['symbol'])
                 if price_limit and float(last_price) > price_limit:
+                    print("Price limit has been hit, cancelling the job")
                     database.cancel_job(data["job_id"])
                     return
 

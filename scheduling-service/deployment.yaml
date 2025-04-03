@@ -20,21 +20,36 @@ spec:
           - containerPort: 8000
         env:
           - name: POSTGRES_USER
-            value: "postgres_user"
+            valueFrom:
+              secretKeyRef:
+                name: scheduling-app-secret
+                key: POSTGRES_USER
           - name: POSTGRES_PASSWORD
-            value: "12345"
+            valueFrom:
+              secretKeyRef:
+                name: scheduling-app-secret
+                key: POSTGRES_PASSWORD
+          - name: POSTGRES_DATABASE
+            valueFrom:
+              secretKeyRef:
+                name: scheduling-app-secret
+                key: POSTGRES_DATABASE
           - name: POSTGRES_HOST
             value: "postgres"
-          - name: POSTGRES_DATABASE
-            value: "scheduler_db"
           - name: POSTGRES_PORT
             value: "5432"
+          - name: RABBITMQ_USER
+            valueFrom:
+              secretKeyRef:
+                name: scheduling-app-secret
+                key: RABBITMQ_USER
+          - name: RABBITMQ_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: scheduling-app-secret
+                key: RABBITMQ_PASSWORD
           - name: RABBITMQ_HOST
             value: "rabbitmq"
-          - name: RABBITMQ_USER
-            value: "rabbitmq_user"
-          - name: RABBITMQ_PASSWORD
-            value: "rabbitmq_password"
           - name: RABBITMQ_PORT
             value: "5672"
           - name: RABBITMQ_QUEUE

@@ -2,10 +2,20 @@ import psycopg2
 import os
 import time
 
+"""
+Handles connection and management of the PostgreSQL database.
+"""
 class Database:
+    """
+    Initializes the Database instance and sets up required tables.
+    """
     def __init__(self):
         self.setup_database()
 
+    """
+    Attempts to connect to the database and create necessary tables.
+    Retries connection several times before failing.
+    """
     def setup_database(self):
         max_retries = 10
         for i in range(max_retries):
@@ -43,9 +53,24 @@ class Database:
         else:
             raise Exception("Could not connect to the database after multiple attempts")
 
+    """
+    Closes the active database connection.
+    """
     def close_db_connection(self):
         self.connection.close()
 
+    """
+    Inserts a new TWAP job record into the `orders` table.
+
+    Args ->
+        params (dict): Dictionary containing keys:
+            - job_id (str)
+            - symbol (str)
+            - side (str)
+            - size (int)
+            - price_limit (float | None)
+            - status (str) — either 'scheduled' or 'canceled'
+    """
     def add_job_to_db(self, params):
         cur = self.connection.cursor()
         cur.execute("""
@@ -61,6 +86,11 @@ class Database:
         ))
         self.connection.commit()
 
+    """
+    Checks whether a job with the given job_id is marked as 'canceled'.
+    Args -> job_id (str): The job ID to check.
+    Returns -> bool: True if canceled, False otherwise.
+    """
     def is_canceled(self, job_id):
         cur = self.connection.cursor()
         cur.execute("""
@@ -72,4 +102,5 @@ class Database:
         to_return = (result[0] == 'canceled') if result else False
         return to_return
 
+# Initialize database connection when this file is loaded
 database = Database()
